@@ -1,8 +1,9 @@
+import React from "react";
 import { CodeBlock } from "./CodeBlock";
 
 // Tiny markdown renderer: supports ## headings, fenced code blocks, bold, blockquote, lists, paragraphs.
 export function Markdown({ source }: { source: string }) {
-  const blocks: JSX.Element[] = [];
+  const blocks: React.ReactElement[] = [];
   const lines = source.split("\n");
   let i = 0;
   let key = 0;

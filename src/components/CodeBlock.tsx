@@ -1,3 +1,4 @@
+import React from "react";
 import { useState } from "react";
 import { Check, Copy } from "lucide-react";
 
@@ -22,7 +23,7 @@ function highlight(code: string) {
   const filtered: typeof tokens = [];
   let end = -1;
   for (const t of tokens) if (t.i >= end) { filtered.push(t); end = t.i + t.len; }
-  const out: (string | JSX.Element)[] = [];
+  const out: (string | React.ReactElement)[] = [];
   let cursor = 0;
   filtered.forEach((t, idx) => {
     if (t.i > cursor) out.push(code.slice(cursor, t.i));
