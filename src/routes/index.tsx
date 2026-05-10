@@ -106,8 +106,8 @@ function Index() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-16">
             {[
               { k: "WRITEUPS", v: posts.filter((p) => p.section === "writeups").length.toString().padStart(2, "0") },
-              { k: "TOOLS_RELEASED", v: "07" },
-              { k: "INVARIANTS_BROKEN", v: "42" },
+              { k: "TOOLS_RELEASED", v: "00" },
+              { k: "INVARIANTS_BROKEN", v: "00" },
               { k: "UPTIME", v: "99.9%" },
             ].map((s) => (
               <div key={s.k} className="panel rounded-md p-4">
