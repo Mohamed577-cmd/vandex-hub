@@ -64,5 +64,16 @@
     "excerpt": "A 30-line Montoya API extension that flags responses missing critical security headers. Learn the API by writing the smallest useful thing.",
     "section": "tips",
     "file": "burp-extender-quickstart.md"
+  },
+  {
+    "slug": "multi-stage-login",
+    "title": "FLaws at multi stage login",
+    "date": "2026-05-11",
+    "category": "INVARIANT",
+    "target": "AUTH",
+    "readTime": "8 min",
+    "excerpt": "invaraint and breaks",
+    "section": "invaraint",
+    "file": "Multi-stage-login.md"
   }
 ]
