@@ -1,10 +1,19 @@
+import { Link } from "@tanstack/react-router";
 import { ArrowUpRight, Clock, Calendar, Crosshair } from "lucide-react";
 import type { Post } from "@/lib/posts";
 
-export function PostCard({ post, index, onOpen }: { post: Post; index: number; onOpen: (p: Post) => void }) {
+const SECTION_TO_PATH = {
+  writeups: "/writeups/$slug",
+  tools: "/tools/$slug",
+  tips: "/tips/$slug",
+  invariant: "/invariant/$slug",
+} as const;
+
+export function PostCard({ post, index }: { post: Post; index: number }) {
   return (
-    <button
-      onClick={() => onOpen(post)}
+    <Link
+      to={SECTION_TO_PATH[post.section]}
+      params={{ slug: post.slug }}
       className="group panel panel-hover rounded-md p-5 text-left flex flex-col gap-4 relative overflow-hidden"
     >
       <div className="flex items-center justify-between">
@@ -27,6 +36,6 @@ export function PostCard({ post, index, onOpen }: { post: Post; index: number; o
         </div>
         <ArrowUpRight className="size-4 text-neon opacity-0 group-hover:opacity-100 transition-opacity" />
       </div>
-    </button>
+    </Link>
   );
 }
