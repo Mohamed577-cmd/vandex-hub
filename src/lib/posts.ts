@@ -1,6 +1,6 @@
 import postsData from "@/data/posts.json";
 
-export type Post = {
+export type PostMeta = {
   slug: string;
   title: string;
   date: string;
@@ -9,10 +9,25 @@ export type Post = {
   readTime: string;
   excerpt: string;
   section: "writeups" | "tools" | "tips" | "invariant";
-  content: string;
+  file: string;
 };
 
+export type Post = PostMeta;
+
 export const posts: Post[] = postsData as Post[];
+
+// Eagerly load all markdown files at build time as raw strings.
+// Vite resolves this statically — works on any static host (Netlify, etc.).
+const contentModules = import.meta.glob("/src/content/posts/*.md", {
+  query: "?raw",
+  import: "default",
+  eager: true,
+}) as Record<string, string>;
+
+export function getPostContent(post: Pick<Post, "file">): string {
+  const key = `/src/content/posts/${post.file}`;
+  return contentModules[key] ?? `_Content not found for ${post.file}_`;
+}
 
 export const SECTION_META: Record<Post["section"], { id: string; label: string; tagline: string }> = {
   writeups: { id: "writeups", label: "Writeups", tagline: "Documented exploits & post-mortems" },
