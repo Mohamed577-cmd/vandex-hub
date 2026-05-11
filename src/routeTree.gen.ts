@@ -10,6 +10,10 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as WriteupsIndexRouteImport } from './routes/writeups.index'
+import { Route as ToolsIndexRouteImport } from './routes/tools.index'
+import { Route as TipsIndexRouteImport } from './routes/tips.index'
+import { Route as InvariantIndexRouteImport } from './routes/invariant.index'
 import { Route as WriteupsSlugRouteImport } from './routes/writeups.$slug'
 import { Route as ToolsSlugRouteImport } from './routes/tools.$slug'
 import { Route as TipsSlugRouteImport } from './routes/tips.$slug'
@@ -18,6 +22,26 @@ import { Route as InvariantSlugRouteImport } from './routes/invariant.$slug'
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WriteupsIndexRoute = WriteupsIndexRouteImport.update({
+  id: '/writeups/',
+  path: '/writeups/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ToolsIndexRoute = ToolsIndexRouteImport.update({
+  id: '/tools/',
+  path: '/tools/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TipsIndexRoute = TipsIndexRouteImport.update({
+  id: '/tips/',
+  path: '/tips/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InvariantIndexRoute = InvariantIndexRouteImport.update({
+  id: '/invariant/',
+  path: '/invariant/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const WriteupsSlugRoute = WriteupsSlugRouteImport.update({
@@ -47,6 +71,10 @@ export interface FileRoutesByFullPath {
   '/tips/$slug': typeof TipsSlugRoute
   '/tools/$slug': typeof ToolsSlugRoute
   '/writeups/$slug': typeof WriteupsSlugRoute
+  '/invariant/': typeof InvariantIndexRoute
+  '/tips/': typeof TipsIndexRoute
+  '/tools/': typeof ToolsIndexRoute
+  '/writeups/': typeof WriteupsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -54,6 +82,10 @@ export interface FileRoutesByTo {
   '/tips/$slug': typeof TipsSlugRoute
   '/tools/$slug': typeof ToolsSlugRoute
   '/writeups/$slug': typeof WriteupsSlugRoute
+  '/invariant': typeof InvariantIndexRoute
+  '/tips': typeof TipsIndexRoute
+  '/tools': typeof ToolsIndexRoute
+  '/writeups': typeof WriteupsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -62,6 +94,10 @@ export interface FileRoutesById {
   '/tips/$slug': typeof TipsSlugRoute
   '/tools/$slug': typeof ToolsSlugRoute
   '/writeups/$slug': typeof WriteupsSlugRoute
+  '/invariant/': typeof InvariantIndexRoute
+  '/tips/': typeof TipsIndexRoute
+  '/tools/': typeof ToolsIndexRoute
+  '/writeups/': typeof WriteupsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -71,6 +107,10 @@ export interface FileRouteTypes {
     | '/tips/$slug'
     | '/tools/$slug'
     | '/writeups/$slug'
+    | '/invariant/'
+    | '/tips/'
+    | '/tools/'
+    | '/writeups/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -78,6 +118,10 @@ export interface FileRouteTypes {
     | '/tips/$slug'
     | '/tools/$slug'
     | '/writeups/$slug'
+    | '/invariant'
+    | '/tips'
+    | '/tools'
+    | '/writeups'
   id:
     | '__root__'
     | '/'
@@ -85,6 +129,10 @@ export interface FileRouteTypes {
     | '/tips/$slug'
     | '/tools/$slug'
     | '/writeups/$slug'
+    | '/invariant/'
+    | '/tips/'
+    | '/tools/'
+    | '/writeups/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -93,6 +141,10 @@ export interface RootRouteChildren {
   TipsSlugRoute: typeof TipsSlugRoute
   ToolsSlugRoute: typeof ToolsSlugRoute
   WriteupsSlugRoute: typeof WriteupsSlugRoute
+  InvariantIndexRoute: typeof InvariantIndexRoute
+  TipsIndexRoute: typeof TipsIndexRoute
+  ToolsIndexRoute: typeof ToolsIndexRoute
+  WriteupsIndexRoute: typeof WriteupsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -102,6 +154,34 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/writeups/': {
+      id: '/writeups/'
+      path: '/writeups'
+      fullPath: '/writeups/'
+      preLoaderRoute: typeof WriteupsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tools/': {
+      id: '/tools/'
+      path: '/tools'
+      fullPath: '/tools/'
+      preLoaderRoute: typeof ToolsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tips/': {
+      id: '/tips/'
+      path: '/tips'
+      fullPath: '/tips/'
+      preLoaderRoute: typeof TipsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/invariant/': {
+      id: '/invariant/'
+      path: '/invariant'
+      fullPath: '/invariant/'
+      preLoaderRoute: typeof InvariantIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/writeups/$slug': {
@@ -141,7 +221,21 @@ const rootRouteChildren: RootRouteChildren = {
   TipsSlugRoute: TipsSlugRoute,
   ToolsSlugRoute: ToolsSlugRoute,
   WriteupsSlugRoute: WriteupsSlugRoute,
+  InvariantIndexRoute: InvariantIndexRoute,
+  TipsIndexRoute: TipsIndexRoute,
+  ToolsIndexRoute: ToolsIndexRoute,
+  WriteupsIndexRoute: WriteupsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
