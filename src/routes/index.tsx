@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState, useEffect } from "react";
 import { Search, Shield, Terminal, X, Github, Mail, Activity } from "lucide-react";
-import { posts, SECTION_META, type Post } from "@/lib/posts";
+import { posts, SECTION_META, getPostContent, type Post } from "@/lib/posts";
 import { PostCard } from "@/components/PostCard";
 import { Markdown } from "@/components/Markdown";
 
@@ -260,7 +260,7 @@ function Index() {
               <h1 className="font-display text-3xl md:text-4xl mb-6 leading-tight">
                 {active.title}
               </h1>
-              <Markdown source={active.content} />
+              <Markdown source={getPostContent(active)} />
             </article>
           </div>
         </div>
