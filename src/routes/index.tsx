@@ -1,9 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState, useEffect } from "react";
-import { Search, Shield, Terminal, X, Github, Mail, Activity } from "lucide-react";
-import { posts, SECTION_META, getPostContent, type Post } from "@/lib/posts";
+import { useMemo, useState } from "react";
+import { Search, Shield, Terminal, Github, Mail, Activity } from "lucide-react";
+import { posts, SECTION_META, type Post } from "@/lib/posts";
 import { PostCard } from "@/components/PostCard";
-import { Markdown } from "@/components/Markdown";
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -28,7 +27,6 @@ const NAV = [
 
 function Index() {
   const [query, setQuery] = useState("");
-  const [active, setActive] = useState<Post | null>(null);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -43,11 +41,6 @@ function Index() {
   }, [query]);
 
   const bySection = (section: Post["section"]) => filtered.filter((p) => p.section === section);
-
-  useEffect(() => {
-    if (active) document.body.style.overflow = "hidden";
-    else document.body.style.overflow = "";
-  }, [active]);
 
   return (
     <div className="min-h-screen relative">
@@ -102,7 +95,6 @@ function Index() {
             </a>
           </div>
 
-          {/* HUD strip */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-16">
             {[
               { k: "WRITEUPS", v: posts.filter((p) => p.section === "writeups").length.toString().padStart(2, "0") },
@@ -119,7 +111,7 @@ function Index() {
         </div>
       </section>
 
-      {/* VULNERABILITY FEED / SEARCH */}
+      {/* SEARCH */}
       <section className="border-b border-[oklch(0.86_0.18_195/15%)]">
         <div className="max-w-7xl mx-auto px-6 py-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div>
@@ -167,7 +159,7 @@ function Index() {
               ) : (
                 <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
                   {items.map((p, idx) => (
-                    <PostCard key={p.slug} post={p} index={idx} onOpen={setActive} />
+                    <PostCard key={p.slug} post={p} index={idx} />
                   ))}
                 </div>
               )}
@@ -238,33 +230,6 @@ function Index() {
           STREAM_OPEN
         </span>
       </footer>
-
-      {/* POST MODAL */}
-      {active && (
-        <div className="fixed inset-0 z-50 flex items-stretch md:items-center justify-center p-0 md:p-6 bg-[oklch(0.1_0.02_240/85%)] backdrop-blur-sm" onClick={() => setActive(null)}>
-          <div
-            className="panel rounded-md max-w-3xl w-full max-h-full overflow-y-auto relative glow-border"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="sticky top-0 z-10 flex items-center justify-between px-6 py-4 border-b border-[oklch(0.86_0.18_195/15%)] bg-[oklch(0.18_0.025_240/95%)] backdrop-blur">
-              <div className="flex items-center gap-3 min-w-0">
-                <span className="label-mono px-2 py-1 border border-[oklch(0.86_0.18_195/40%)] rounded shrink-0">{active.category}</span>
-                <span className="label-mono opacity-70 truncate">{active.target} // {active.readTime}</span>
-              </div>
-              <button onClick={() => setActive(null)} className="text-muted-foreground hover:text-neon transition" aria-label="Close">
-                <X className="size-5" />
-              </button>
-            </div>
-            <article className="p-6 md:p-10">
-              <div className="label-mono mb-3">{active.date}</div>
-              <h1 className="font-display text-3xl md:text-4xl mb-6 leading-tight">
-                {active.title}
-              </h1>
-              <Markdown source={getPostContent(active)} />
-            </article>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

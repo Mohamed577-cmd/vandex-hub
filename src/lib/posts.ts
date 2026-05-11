@@ -29,6 +29,10 @@ export function getPostContent(post: Pick<Post, "file">): string {
   return contentModules[key] ?? `_Content not found for ${post.file}_`;
 }
 
+export function getPostBySlug(section: Post["section"], slug: string): Post | undefined {
+  return posts.find((p) => p.section === section && p.slug === slug);
+}
+
 export const SECTION_META: Record<Post["section"], { id: string; label: string; tagline: string }> = {
   writeups: { id: "writeups", label: "Writeups", tagline: "Documented exploits & post-mortems" },
   tools: { id: "tools", label: "Vandex Tools", tagline: "Operator tooling & recon engines" },
