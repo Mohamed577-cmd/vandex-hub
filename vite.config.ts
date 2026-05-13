@@ -1,14 +1,29 @@
-import { defineConfig } from "@lovable.dev/vite-tanstack-config";
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import { TanStackRouterVite } from "@tanstack/router-plugin/vite";
+import tailwindcss from "@tailwindcss/vite";
+import tsconfigPaths from "vite-tsconfig-paths";
 
-// Pure SPA build: TanStack Start emits a single index.html shell that
-// hydrates client-side. Output goes to dist/client and works on any
-// static host (Cloudflare Pages, Vercel, Netlify, GitHub Pages).
+// Pure client-side SPA. No SSR, no server entry, no worker output.
+// Build emits dist/index.html + dist/assets/* — deployable to any static host.
 export default defineConfig({
-  cloudflare: false,
-  tanstackStart: {
-    spa: {
-      enabled: true,
-      prerender: { outputPath: "/index.html" },
-    },
+  plugins: [
+    tsconfigPaths(),
+    TanStackRouterVite({
+      target: "react",
+      autoCodeSplitting: true,
+      routesDirectory: "./src/routes",
+      generatedRouteTree: "./src/routeTree.gen.ts",
+    }),
+    react(),
+    tailwindcss(),
+  ],
+  build: {
+    outDir: "dist",
+    sourcemap: false,
+  },
+  server: {
+    host: "::",
+    port: 8080,
   },
 });
