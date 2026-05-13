@@ -98,9 +98,9 @@ function Index() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-16">
             {[
               { k: "WRITEUPS", v: posts.filter((p) => p.section === "writeups").length.toString().padStart(2, "0") },
-              { k: "TOOLS_RELEASED", v: "00" },
-              { k: "INVARIANTS_BROKEN", v: "00" },
-              { k: "UPTIME", v: "99.9%" },
+              { k: "TOOLS_RELEASED", v: posts.filter((p) => p.section === "tools").length.toString().padStart(2, "0") },
+              { k: "INVARIANT_AND_BREAKS", v: posts.filter((p) => p.section === "invariant").length.toString().padStart(2, "0") },
+              { k: "TIPS", v: posts.filter((p) => p.section === "tips").length.toString().padStart(2, "0") },
             ].map((s) => (
               <div key={s.k} className="panel rounded-md p-4">
                 <div className="label-mono opacity-70 mb-2">{s.k}</div>
